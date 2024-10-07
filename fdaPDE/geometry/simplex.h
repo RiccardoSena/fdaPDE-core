@@ -114,14 +114,14 @@ template <int Order_, int EmbedDim_> class Simplex {
     enum ContainsReturnType { OUTSIDE = 0, INSIDE = 1, ON_FACE = 2, ON_VERTEX = 3 };
     ContainsReturnType contains(const SVector<embed_dim>& x) const requires(Order_ > 0) {
         if constexpr (local_dim != embed_dim) {
-            if (supporting_plane().distance(x) > fdapde::machine_epsilon) return ContainsReturnType::OUTSIDE;
+            if (supporting_plane().distance(x) > fdapde::core::machine_epsilon) return ContainsReturnType::OUTSIDE;
         }
         // move x to barycentric coordinates
         SVector<local_dim + 1> z;
         z.bottomRows(local_dim) = invJ_ * (x - coords_.col(0));
         z[0] = 1 - z.bottomRows(local_dim).sum();
-        if ((z.array() < -fdapde::machine_epsilon).any()) return ContainsReturnType::OUTSIDE;
-        int nonzeros = (z.array() > fdapde::machine_epsilon).count();
+        if ((z.array() < -fdapde::core::machine_epsilon).any()) return ContainsReturnType::OUTSIDE;
+        int nonzeros = (z.array() > fdapde::core::machine_epsilon).count();
         if (nonzeros == 1) return ContainsReturnType::ON_VERTEX;
         if (nonzeros == n_nodes_per_face) return ContainsReturnType::ON_FACE;
         return ContainsReturnType::INSIDE;
@@ -159,10 +159,10 @@ template <int Order_, int EmbedDim_> class Simplex {
 	// check if point inside simplex
         if constexpr (local_dim != embed_dim) {
             if (
-              (q.array() > -fdapde::machine_epsilon).all() && supporting_plane().distance(p) < fdapde::machine_epsilon)
+              (q.array() > -fdapde::core::machine_epsilon).all() && supporting_plane().distance(p) < fdapde::core::machine_epsilon)
                 return p;
         } else {
-            if ((q.array() > -fdapde::machine_epsilon).all()) return p;
+            if ((q.array() > -fdapde::core::machine_epsilon).all()) return p;
         }
         if constexpr (Order_ == 1) {   // end of recursion
             if (q[0] < 0) return coords_.col(1);

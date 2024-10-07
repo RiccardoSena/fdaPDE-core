@@ -43,7 +43,7 @@ DEFINE_MESH_TYPE_DETECTION_TRAIT(3, 3, 3d);        // is_3d<M, N>
 constexpr int ct_nnodes(const int M, const int R) { return ct_factorial(M + R) / (ct_factorial(M) * ct_factorial(R)); }
 constexpr int ct_nvertices(const int M) { return M + 1; }
 constexpr int ct_nedges(const int M) { return (M * (M + 1)) / 2; }
-constexpr int ct_nneighbors(const int M) { return (M == 1) ? fdapde::Dynamic : (M + 1); }
+constexpr int ct_nneighbors(const int M) { return (M == 1) ? fdapde::core::Dynamic : (M + 1); }
 
 // sorts a range of points in clockwise order around their geometrical center
 template <typename T> struct clockwise_order {

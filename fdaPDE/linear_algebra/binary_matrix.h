@@ -94,7 +94,7 @@ template <int Rows, int Cols = Rows> class BinaryMatrix : public BinMtxBase<Rows
     template <typename Iterator>
     BinaryMatrix(Iterator begin, Iterator end, int n_rows, int n_cols) : Base(n_rows, n_cols) {
         fdapde_static_assert(
-          Rows == fdapde::Dynamic && Cols == fdapde::Dynamic, THIS_METHOD_IS_ONLY_FOR_DYNAMIC_SIZED_MATRICES);
+          Rows == fdapde::core::Dynamic && Cols == fdapde::core::Dynamic, THIS_METHOD_IS_ONLY_FOR_DYNAMIC_SIZED_MATRICES);
         resize(n_rows, n_cols);   // reserve space
         int i = 0, size = n_rows * n_cols;
         for (Iterator it = begin; it != end || i < size; ++it, ++i) {

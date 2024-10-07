@@ -25,11 +25,11 @@ TEST(FspaiTestSuite, FspaiTest) {
 
     // Define a sparse matrix for input in the FSPAI algorithm
     SpMatrix<double> E_; 
-    Eigen::loadMarket(E_, "matrix_to_be_inverted.mtx"); // Load the matrix to be inverted from file
+    Eigen::loadMarket(E_, "../matrix_to_be_inverted.mtx"); // Load the matrix to be inverted from file
 
     // Define a sparse matrix for the expected result
     SpMatrix<double> expected_precondE;
-    Eigen::loadMarket(expected_precondE, "expected_inverted_matrix.mtx"); // Load the expected inverted matrix from file
+    Eigen::loadMarket(expected_precondE, "../expected_inverted_matrix.mtx"); // Load the expected inverted matrix from file
 
     // Compute the inverted matrix E using the FSPAI algorithm
     int alpha = 10;    // Number of updates to the sparsity pattern for each column of A (perform alpha steps of approximate inverse update along column k)
@@ -37,13 +37,14 @@ TEST(FspaiTestSuite, FspaiTest) {
     double epsilon = 0.005; // Tolerance threshold for sparsity pattern update (the improvement must be higher than the acceptable threshold)
       
     FSPAI fspai_E(E_); // Initialize FSPAI with the input matrix
-    fspai_E.compute(alpha, beta, epsilon); // Compute the approximate inverse
+    fspai_E.compute(E_,alpha, beta, epsilon); // Compute the approximate inverse
     SpMatrix<double> precondE_ = fspai_E.getL(); // Get the result matrix from FSPAI
 
+    Eigen::saveMarket(precondE_, "precondsoluzione.mtx"); 
     // Convert the sparse matrix result to a dense matrix
     DMatrix<double> denseMatrix = (precondE_ - expected_precondE).toDense();
     // Compute the infinity norm of the difference
     double normInf = denseMatrix.lpNorm<Eigen::Infinity>();
     // Check if the computed norm is within the acceptable tolerance
-    EXPECT_TRUE(normInf < fdapde::DOUBLE_TOLERANCE);   
+    EXPECT_TRUE(normInf < fdapde::core::DOUBLE_TOLERANCE); 
 }

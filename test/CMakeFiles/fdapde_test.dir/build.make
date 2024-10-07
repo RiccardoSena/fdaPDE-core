@@ -93,6 +93,8 @@ fdapde_test_EXTERNAL_OBJECTS =
 fdapde_test: CMakeFiles/fdapde_test.dir/main.cpp.o
 fdapde_test: CMakeFiles/fdapde_test.dir/build.make
 fdapde_test: lib/libgtest_main.a
+fdapde_test: /usr/lib/gcc/x86_64-linux-gnu/11/libgomp.so
+fdapde_test: /usr/lib/x86_64-linux-gnu/libpthread.a
 fdapde_test: lib/libgtest.a
 fdapde_test: CMakeFiles/fdapde_test.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable fdapde_test"

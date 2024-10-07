@@ -71,7 +71,7 @@ template <> class Triangulation<1, 1> {
     const DVector<double>& nodes() const { return nodes_; }
     const DMatrix<int, Eigen::RowMajor>& cells() const { return cells_; }
     const DMatrix<int, Eigen::RowMajor>& neighbors() const { return neighbors_; }
-    const BinaryVector<fdapde::Dynamic>& boundary() const { return nodes_markers_; }
+    const BinaryVector<fdapde::core::Dynamic>& boundary() const { return nodes_markers_; }
     int n_cells() const { return n_cells_; }
     int n_nodes() const { return n_nodes_; }
     SVector<2> range() const { return range_; }
@@ -128,7 +128,7 @@ template <> class Triangulation<1, 1> {
     DVector<double> nodes_;                            // physical coordinates of mesh's vertices
     DMatrix<int, Eigen::RowMajor> cells_ {};           // nodes (as row indexes in nodes_ matrix) composing each cell
     DMatrix<int, Eigen::RowMajor> neighbors_ {};       // ids of faces adjacent to a given face (-1 if no adjacent face)
-    BinaryVector<fdapde::Dynamic> nodes_markers_ {};   // j-th element is 1 \iff node j is on boundary
+    BinaryVector<fdapde::core::Dynamic> nodes_markers_ {};   // j-th element is 1 \iff node j is on boundary
     SVector<2> range_ {};                              // mesh bounding box (min and max coordinates)
     int n_nodes_ = 0, n_cells_ = 0;
 };

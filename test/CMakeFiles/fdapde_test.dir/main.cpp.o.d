@@ -341,6 +341,7 @@ CMakeFiles/fdapde_test.dir/main.cpp.o: \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/mm_malloc.h \
  /usr/include/c++/11/complex \
  /usr/include/eigen3/Eigen/src/Core/util/MKL_support.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/omp.h \
  /usr/include/c++/11/cstring /usr/include/c++/11/algorithm \
  /usr/include/c++/11/bits/ranges_algo.h \
  /usr/include/c++/11/bits/ranges_util.h \
@@ -602,11 +603,11 @@ CMakeFiles/fdapde_test.dir/main.cpp.o: \
  /usr/include/c++/11/bits/list.tcc \
  /home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/src/fspai_test.cpp \
  /home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/src/../../fdaPDE/linear_algebra/fspai.h \
- /usr/include/eigen3/Eigen/Cholesky /usr/include/c++/11/unordered_set \
- /usr/include/c++/11/bits/unordered_set.h \
+ /usr/include/eigen3/Eigen/Cholesky \
  /home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/src/../../fdaPDE/linear_algebra/../utils/symbols.h \
  /usr/include/eigen3/Eigen/Core \
  /home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/src/../../fdaPDE/linear_algebra/../utils/traits.h \
+ /home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/src/../../fdaPDE/linear_algebra/../utils/assert.h \
  /home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/../fdaPDE/utils.h \
  /home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/../fdaPDE/utils/symbols.h \
  /home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/../fdaPDE/utils/assert.h \
@@ -631,6 +632,8 @@ CMakeFiles/fdapde_test.dir/main.cpp.o: \
  /usr/include/c++/11/bits/random.tcc /usr/include/c++/11/numeric \
  /usr/include/c++/11/bits/stl_numeric.h \
  /usr/include/c++/11/pstl/glue_numeric_defs.h \
+ /usr/include/c++/11/unordered_set \
+ /usr/include/c++/11/bits/unordered_set.h \
  /home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/../fdaPDE/utils/data_structures/../symbols.h \
  /home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/../fdaPDE/utils/data_structures/../traits.h \
  /home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/../fdaPDE/utils/data_structures/block_vector.h \
