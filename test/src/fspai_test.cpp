@@ -45,6 +45,60 @@ TEST(FspaiTestSuite, FspaiTest) {
     DMatrix<double> denseMatrix = (precondE_ - expected_precondE).toDense();
     // Compute the infinity norm of the difference
     double normInf = denseMatrix.lpNorm<Eigen::Infinity>();
+
+
+    using namespace std::chrono;
+    
+    int n_it = 20; // Numero di iterazioni
+    std::vector<std::string> matrixFiles = {
+        "../build/matrix10nonvuota.mtx",
+        "../build/matrix9nonvuota.mtx",
+        "../build/matrix8nonvuota.mtx",
+        "../build/matrix7nonvuota.mtx",
+        "../build/matrix6nonvuota.mtx",
+        "../build/matrix5nonvuota.mtx",
+        "../build/matrix4nonvuota.mtx"
+    };
+    std::vector<std::string> precondFiles = {
+        "precondsoluzione10nonvuota.mtx",
+        "precondsoluzione9nonvuota.mtx",
+        "precondsoluzione8nonvuota.mtx",
+        "precondsoluzione7nonvuota.mtx",
+        "precondsoluzione6nonvuota.mtx",
+        "precondsoluzione5nonvuota.mtx",
+        "precondsoluzione4nonvuota.mtx"
+
+    };
+
+    for (size_t j = 0; j < matrixFiles.size(); ++j) {
+        // Definisci una matrice sparsa per l'input nell'algoritmo FSPAI
+        SpMatrix<double> matrix; 
+        Eigen::loadMarket(matrix, matrixFiles[j]); // Carica la matrice dal file
+
+        FSPAI fspai(matrix); // Inizializza FSPAI con la matrice di input
+        fspai.compute(matrix, alpha, beta, epsilon); // Calcola l'inverso approssimato
+        SpMatrix<double> precond = fspai.getL(); // Ottieni la matrice risultante da FSPAI
+
+        Eigen::saveMarket(precond, precondFiles[j]); // Salva la matrice precondizionata
+
+        // Cronometra l'operazione
+        std::chrono::microseconds total_duration(0);
+
+        for (int i = 0; i < n_it; ++i) {
+            auto start = high_resolution_clock::now();
+
+            fspai.compute(matrix, alpha, beta, epsilon); // Calcola l'inverso approssimato
+
+            auto end = high_resolution_clock::now();
+            auto duration = duration_cast<std::chrono::microseconds>(end - start);
+            total_duration += duration;
+        }
+
+        auto average_duration = total_duration / n_it;
+        std::cout << "Mean time for matrix " << (10 - j) << " is: "
+                  << average_duration.count() * 1e-3 << " milliseconds" << std::endl; // Converti in millisecondi
+    }
+
     // Check if the computed norm is within the acceptable tolerance
     EXPECT_TRUE(normInf < fdapde::core::DOUBLE_TOLERANCE); 
 }

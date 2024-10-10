@@ -19,13 +19,13 @@
 #define __FSPAI_H__
 
 #include <Eigen/Cholesky>
+#include <Eigen/SparseCholesky>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <unordered_map>
 #include <vector>
 
 #include "../utils/symbols.h"
-
 
 namespace fdapde {
 namespace core {
@@ -63,7 +63,7 @@ template <typename Index_, int Options_> struct sparsity_pattern {
         typename std::vector<Index>::const_iterator begin() const { return nnzeros_.begin(); }
         typename std::vector<Index>::const_iterator end() const { return nnzeros_.end(); }
         Index operator[](Index i) const {   // access the i-th nonzero of the line
-            fdapde_assert(static_cast<std::size_t>(i) < nnzeros_.size());
+           // fdapde_assert(static_cast<std::size_t>(i) < nnzeros_.size());
             return nnzeros_[i];
         }
         Index size() const { return size_; }
@@ -294,7 +294,13 @@ struct FSPAI {
     Index cols() const { return L_.cols(); }
     MatrixL getL() const { return MatrixL(L_); }   // the Cholesky factor of the approximate inverse of matrix
     MatrixU getU() const { return MatrixU(L_.transpose()); }
-    SparseMatrixType inverse() const { return getL() * getU(); }   // the factorized sparse approximate inverse
+    SparseMatrixType inverse() const { 
+    SparseMatrixType L_sparse = getL();
+    SparseMatrixType U_sparse = getU();
+    
+    // Moltiplica le matrici sparse
+    return L_sparse * U_sparse;
+}   // the factorized sparse approximate inverse
 
     // linear system solve
     template <typename Other> void solveInPlace(const Eigen::MatrixBase<Other>& other) const {

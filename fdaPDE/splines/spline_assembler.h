@@ -39,7 +39,7 @@ template <typename D, typename B, typename I> class Assembler<SPLINE, D, B, I> {
     template <typename E> SpMatrix<double> discretize_operator(const E& op) {
         constexpr int R = B::order;
         std::size_t M = basis_.size();
-        std::vector<fdapde::Triplet<double>> triplet_list;
+        std::vector<fdapde::core::Triplet<double>> triplet_list;
         SpMatrix<double> discretization_matrix;
 
         // properly preallocate memory to avoid reallocations

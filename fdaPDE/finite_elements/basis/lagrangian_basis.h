@@ -210,7 +210,7 @@ template <typename MeshType, int order> struct pointwise_evaluation<LagrangianBa
       fdapde_assert(locs.size() != 0 && locs.cols() == MeshType::embed_dim);
       // preallocate space
       SpMatrix<double> Psi(locs.rows(), n_basis);
-      std::vector<fdapde::Triplet<double>> triplet_list;
+      std::vector<fdapde::core::Triplet<double>> triplet_list;
       triplet_list.reserve(locs.rows() * basis.size());
       // locate points
       DVector<int> element_ids = domain.locate(locs);
@@ -245,7 +245,7 @@ template <typename MeshType, int order> struct areal_evaluation<LagrangianBasis<
       typename BasisType::Quadrature integrator {};
       // preallocate space
       SpMatrix<double> Psi(locs.rows(), n_basis);
-      std::vector<fdapde::Triplet<double>> triplet_list;
+      std::vector<fdapde::core::Triplet<double>> triplet_list;
       triplet_list.reserve(locs.rows() * n_basis);
 
       DVector<double> D(locs.rows());   // measure of subdomains

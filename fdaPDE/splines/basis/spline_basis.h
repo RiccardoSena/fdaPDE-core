@@ -88,7 +88,7 @@ template <int R> struct pointwise_evaluation<SplineBasis<R>> {
         fdapde_assert(locs.size() != 0);
         // preallocate space
         SpMatrix<double> Phi(locs.rows(), n_basis);
-        std::vector<fdapde::Triplet<double>> triplet_list;
+        std::vector<fdapde::core::Triplet<double>> triplet_list;
         triplet_list.reserve(locs.rows() * (R + 1));
         // build \Phi matrix
         for (int i = 0; i < n_basis; ++i) {

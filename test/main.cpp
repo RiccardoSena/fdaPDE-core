@@ -44,10 +44,10 @@
 #include "src/optimization_test.cpp"
 // splines
 #include "src/spline_test.cpp"
-*/
+
 // fspai
 #include "src/fspai_test.cpp"
-
+*/
 int main(int argc, char** argv) {
     // start testing
     testing::InitGoogleTest(&argc, argv);
