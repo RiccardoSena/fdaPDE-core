@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/../src -I/home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/../../fdaPDE -I/home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/_deps/googletest-src/googletest/include -I/home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/_deps/googletest-src/googletest
 
-CXX_FLAGS = -g -O2 -march=x86-64 -std=c++20 -Wall -Wpedantic -Wextra -Werror -I/home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/../ -I/home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/../fdaPDE/core/ -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -std=c++20
+CXX_FLAGS = -g -O0 -march=x86-64 -std=c++20 -Wall -Wpedantic -Wextra -Werror -I/home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/../ -I/home/fem/fdaPDE_cpp/fdaPDE-cpp/fdaPDE/core/test/../fdaPDE/core/ -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -std=c++20
 

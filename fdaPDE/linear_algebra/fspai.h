@@ -172,13 +172,26 @@ struct FSPAI {
     void compute_impl_(const MatrixType& matrix, int alpha, int beta, double epsilon) {
         std::vector<Eigen::Triplet<double>> tripet_list;
         int n_cols = matrix.cols();
+        //internals::sparsity_pattern<Index, ColMajor> matrix_sparsity_(matrix);   // compute input sparsity pattern
+        auto start = std::chrono::high_resolution_clock::now();
         internals::sparsity_pattern<Index, ColMajor> matrix_sparsity_(matrix);   // compute input sparsity pattern
+        auto end = std::chrono::high_resolution_clock::now();
+        std::cout << "Sparsity pattern calculation time: " 
+                << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() 
+                << " microseconds" << std::endl;
         L_.resize(n_cols, n_cols);
         CholeskySolver solver;
         DenseMatrixType Ak;            // memory buffer for incremental build of matrix A(Jk_, Jk_)
         DenseVectorType bk;            // memory buffer for incremental build of rhs vector A(Jk_, k)
         DenseVectorType Lk_(n_cols);   // the k-th column of the approximate inverse of L_
 
+
+        long long total_matrix_build_time = 0;
+        long long total_solver_time = 0;
+        long long total_sparsity_update_time = 0;
+        long long total_hatJk_time = 0;
+        long long total_triplet_storage_time = 0;
+        long long total_final_assembly_time = 0;
         // cycle over each column of the sparse matrix A_
         for (Index k = 0; k < n_cols; ++k) {
             std::vector<Index> Ck_ {};         // indexes eligible to enter in the sparsity pattern of column k
@@ -191,10 +204,11 @@ struct FSPAI {
             delta_Jk_.push_back(k);
 
             int Jk_offset = 1;
+
             // perform alpha_ steps of approximate inverse update along column k
             for (Index s = 0; s < alpha && !delta_Jk_.empty(); ++s) {
                 if (s != 0) {
-                    // build SPD linear system A(Jk_, Jk_)*yk = A(Jk_, k), being k fixed. Jk_ is incremental, query the
+                    /*// build SPD linear system A(Jk_, Jk_)*yk = A(Jk_, k), being k fixed. Jk_ is incremental, query the
                     // input matrix only for those entries which have entered the sparsity pattern at iteration s - 1
                     Index nnzeros_ = Jk_.size();
                     Ak.conservativeResize(nnzeros_ - 1, nnzeros_ - 1);
@@ -208,21 +222,58 @@ struct FSPAI {
                     Jk_offset = nnzeros_;
                     solver.compute(Ak.template selfadjointView<Eigen::Lower>());
                     DenseVectorType yk = solver.solve(bk);
+                    */
+                    start = std::chrono::high_resolution_clock::now();
+                    Index nnzeros_ = Jk_.size();
+                    Ak.conservativeResize(nnzeros_ - 1, nnzeros_ - 1);
+                    bk.conservativeResize(nnzeros_ - 1);
+                    for (int i = Jk_offset; i < nnzeros_; ++i) {
+                        for (int j = 1; j < i + 1; ++j) {
+                            Ak(i - 1, j - 1) = matrix.coeff(Jk_[i], Jk_[j]);
+                        }
+                        bk[i - 1] = matrix.coeff(Jk_[i], k);
+                    }
+                    end = std::chrono::high_resolution_clock::now();
+                    
+                    total_matrix_build_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+
+
+                    start = std::chrono::high_resolution_clock::now();
+                    solver.compute(Ak.template selfadjointView<Eigen::Lower>());
+                    DenseVectorType yk = solver.solve(bk);
+                    end = std::chrono::high_resolution_clock::now();
+                    
+                    total_solver_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+
                     // update approximate inverse
                     Scalar l_kk = 1.0 / (std::sqrt(matrix.coeff(k, k) - bk.dot(yk)));
                     Lk_[k] = l_kk;                                                            // diagonal entry
                     for (int i = 1; i < nnzeros_; ++i) { Lk_[Jk_[i]] = -l_kk * yk[i - 1]; }   // off-diagonal entries
                 }
 
-                // sparsity pattern update (select entry which improves the K condition number better than average)
+                /*// sparsity pattern update (select entry which improves the K condition number better than average)
                 for (auto row = delta_Jk_.begin(); row != delta_Jk_.end(); ++row) {
                     for (auto j : matrix_sparsity_[*row]) {
                         // Cholesky factor is upper triangular
                         if (j > k && std::find(Ck_.begin(), Ck_.end(), j) == Ck_.end()) { Ck_.push_back(j); }
                     }
                 }
+               
+                delta_Jk_.clear();*/
+                start = std::chrono::high_resolution_clock::now();
+                for (auto row = delta_Jk_.begin(); row != delta_Jk_.end(); ++row) {
+                    for (auto j : matrix_sparsity_[*row]) {
+                        if (j > k && std::find(Ck_.begin(), Ck_.end(), j) == Ck_.end()) { 
+                            Ck_.push_back(j); 
+                        }
+                    }
+                }
                 delta_Jk_.clear();
-                std::unordered_map<Index, double> hatJk_ {};
+                end = std::chrono::high_resolution_clock::now();
+                
+                total_sparsity_update_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+
+                /*std::unordered_map<Index, double> hatJk_ {};
                 for (Index j : Ck_) {
                     if (std::find(Jk_.begin(), Jk_.end(), j) == Jk_.end()) {   // nonzero entry not found at (j, k)
                         Scalar v = 0;
@@ -232,7 +283,22 @@ struct FSPAI {
                         }
                         hatJk_.emplace(j, v);
                     }
+                }*/
+                start = std::chrono::high_resolution_clock::now();
+                std::unordered_map<Index, double> hatJk_;
+                for (Index j : Ck_) {
+                    if (std::find(Jk_.begin(), Jk_.end(), j) == Jk_.end()) {
+                        Scalar v = 0;
+                        for (Index l : Jk_) {
+                            v += (k != j) ? 2 * matrix.coeff(j, l) * Lk_[l] : matrix.coeff(j, l) * Lk_[l];
+                        }
+                        hatJk_.emplace(j, v);
+                    }
                 }
+                end = std::chrono::high_resolution_clock::now();
+                
+                total_hatJk_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+
                 Scalar tau_k = 0;     // average improvement to the K-condition number
                 Scalar max_tau = 0;   // best improvement to the K-condition number
                 for (auto& [j, v] : hatJk_) {
@@ -261,10 +327,32 @@ struct FSPAI {
                 }
             }
             // store column k-th result
-            for (Index i : Jk_) { tripet_list.emplace_back(i, k, Lk_[i]); }
-        }
+            //for (Index i : Jk_) { tripet_list.emplace_back(i, k, Lk_[i]); }
+            start = std::chrono::high_resolution_clock::now();
+            for (Index i : Jk_) { 
+                tripet_list.emplace_back(i, k, Lk_[i]); 
+            }
+            end = std::chrono::high_resolution_clock::now();
+           
+            total_triplet_storage_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+
+            }
         // build final result
+        //L_.setFromTriplets(tripet_list.begin(), tripet_list.end());
+        start = std::chrono::high_resolution_clock::now();
         L_.setFromTriplets(tripet_list.begin(), tripet_list.end());
+        end = std::chrono::high_resolution_clock::now();
+       
+        total_final_assembly_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+
+
+        std::cout << "Total matrix build time: " << total_matrix_build_time << " microseconds" << std::endl;
+        std::cout << "Total solver time: " << total_solver_time << " microseconds" << std::endl;
+        std::cout << "Total sparsity pattern update time: " << total_sparsity_update_time << " microseconds" << std::endl;
+        std::cout << "Total hatJk_ calculation time: " << total_hatJk_time << " microseconds" << std::endl;
+        std::cout << "Total triplet storage time: " << total_triplet_storage_time << " microseconds" << std::endl;
+        std::cout << "Total final matrix assembly time: " << total_final_assembly_time << " microseconds" << std::endl;
+
         return;
     }
   
@@ -298,7 +386,6 @@ struct FSPAI {
     SparseMatrixType L_sparse = getL();
     SparseMatrixType U_sparse = getU();
     
-    // Moltiplica le matrici sparse
     return L_sparse * U_sparse;
 }   // the factorized sparse approximate inverse
 

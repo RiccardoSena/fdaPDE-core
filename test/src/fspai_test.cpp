@@ -36,8 +36,8 @@ TEST(FspaiTestSuite, FspaiTest) {
     int beta = 10;     // Number of indices to add to the sparsity pattern of Lk for each update step
     double epsilon = 0.005; // Tolerance threshold for sparsity pattern update (the improvement must be higher than the acceptable threshold)
       
-    FSPAI fspai_E(E_); // Initialize FSPAI with the input matrix
-    fspai_E.compute(E_,alpha, beta, epsilon); // Compute the approximate inverse
+    FSPAI fspai_E(E_,alpha,beta,epsilon); // Initialize FSPAI with the input matrix
+    //fspai_E.compute(E_,alpha, beta, epsilon); // Compute the approximate inverse
     SpMatrix<double> precondE_ = fspai_E.getL(); // Get the result matrix from FSPAI
 
     Eigen::saveMarket(precondE_, "precondsoluzione.mtx"); 
@@ -46,6 +46,8 @@ TEST(FspaiTestSuite, FspaiTest) {
     // Compute the infinity norm of the difference
     double normInf = denseMatrix.lpNorm<Eigen::Infinity>();
 
+
+/*
 
     using namespace std::chrono;
     
@@ -75,11 +77,11 @@ TEST(FspaiTestSuite, FspaiTest) {
         SpMatrix<double> matrix; 
         Eigen::loadMarket(matrix, matrixFiles[j]); // Carica la matrice dal file
 
-        FSPAI fspai(matrix); // Inizializza FSPAI con la matrice di input
-        fspai.compute(matrix, alpha, beta, epsilon); // Calcola l'inverso approssimato
-        SpMatrix<double> precond = fspai.getL(); // Ottieni la matrice risultante da FSPAI
+        //FSPAI fspai(matrix); // Inizializza FSPAI con la matrice di input
+        //fspai.compute(matrix, alpha, beta, epsilon); // Calcola l'inverso approssimato
+        //SpMatrix<double> precond = fspai.getL(); // Ottieni la matrice risultante da FSPAI
 
-        Eigen::saveMarket(precond, precondFiles[j]); // Salva la matrice precondizionata
+        //Eigen::saveMarket(precond, precondFiles[j]); // Salva la matrice precondizionata
 
         // Cronometra l'operazione
         std::chrono::microseconds total_duration(0);
@@ -87,7 +89,7 @@ TEST(FspaiTestSuite, FspaiTest) {
         for (int i = 0; i < n_it; ++i) {
             auto start = high_resolution_clock::now();
 
-            fspai.compute(matrix, alpha, beta, epsilon); // Calcola l'inverso approssimato
+            FSPAI fspai(matrix,alpha,beta,epsilon); // Inizializza FSPAI con la matrice di input
 
             auto end = high_resolution_clock::now();
             auto duration = duration_cast<std::chrono::microseconds>(end - start);
@@ -98,6 +100,7 @@ TEST(FspaiTestSuite, FspaiTest) {
         std::cout << "Mean time for matrix " << (10 - j) << " is: "
                   << average_duration.count() * 1e-3 << " milliseconds" << std::endl; // Converti in millisecondi
     }
+    */
 
     // Check if the computed norm is within the acceptable tolerance
     EXPECT_TRUE(normInf < fdapde::core::DOUBLE_TOLERANCE); 
