@@ -294,7 +294,11 @@ struct FSPAI {
     Index cols() const { return L_.cols(); }
     MatrixL getL() const { return MatrixL(L_); }   // the Cholesky factor of the approximate inverse of matrix
     MatrixU getU() const { return MatrixU(L_.transpose()); }
-    SparseMatrixType inverse() const { return getL() * getU(); }   // the factorized sparse approximate inverse
+    SparseMatrixType inverse() const { 
+        SparseMatrixType L_sparse = getL();
+        SparseMatrixType U_sparse = getU();
+        
+        return L_sparse * U_sparse; }    // the factorized sparse approximate inverse
 
     // linear system solve
     template <typename Other> void solveInPlace(const Eigen::MatrixBase<Other>& other) const {

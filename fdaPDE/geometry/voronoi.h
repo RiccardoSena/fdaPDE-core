@@ -124,7 +124,7 @@ template <> class Voronoi<Triangulation<2, 2>> {
     const DMatrix<double>& sites() const { return mesh_->nodes(); }
     SVector<embed_dim> vertex(int id) const { return nodes_.row(id); }
     SVector<embed_dim> site(int id) const { return mesh_->node(id); }
-    const BinaryVector<fdapde::Dynamic>& boundary_vertices() const { return nodes_markers_; }
+    const BinaryVector<Dynamic>& boundary_vertices() const { return nodes_markers_; }
     const DMatrix<double>& vertices() const { return nodes_; }
     const Triangulation<2, 2>& dual() const { return *mesh_; }
     int n_nodes() const { return nodes_.rows(); }
@@ -189,7 +189,7 @@ template <> class Voronoi<Triangulation<2, 2>> {
    private:
     const Triangulation<2, 2>* mesh_;
     DMatrix<double> nodes_;                             // voronoi vertices
-    BinaryVector<fdapde::Dynamic> nodes_markers_;       // i-th element true if i-th vertex is on boundary
+    BinaryVector<Dynamic> nodes_markers_;       // i-th element true if i-th vertex is on boundary
     std::unordered_map<int, std::vector<int>> cells_;   // for each cell id, the ids of the vertices composing it
 };
 
@@ -241,7 +241,7 @@ template <> class Voronoi<Triangulation<1, 1>> {
     const DVector<double>& sites() const { return mesh_->nodes(); }
     SVector<embed_dim> vertex(int id) const { return nodes_.row(id); }
     SVector<embed_dim> site(int id) const { return mesh_->node(id); }
-    const BinaryVector<fdapde::Dynamic>& boundary_vertices() const { return nodes_markers_; }
+    const BinaryVector<Dynamic>& boundary_vertices() const { return nodes_markers_; }
     const DMatrix<double>& vertices() const { return nodes_; }
     const Triangulation<1, 1>& dual() const { return *mesh_; }
     int n_nodes() const { return nodes_.rows(); }
@@ -285,7 +285,7 @@ template <> class Voronoi<Triangulation<1, 1>> {
    private:
     const Triangulation<1, 1>* mesh_;
     DMatrix<double> nodes_;                             // voronoi vertices
-    BinaryVector<fdapde::Dynamic> nodes_markers_;       // i-th element true if i-th vertex is on boundary
+    BinaryVector<Dynamic> nodes_markers_;       // i-th element true if i-th vertex is on boundary
     std::unordered_map<int, std::vector<int>> cells_;   // for each cell id, the ids of the vertices composing it
 };
   
